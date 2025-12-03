@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 from transformers import AutoModel
 from sklearn.metrics import accuracy_score
 
-class ColaMoldel(pl.LightningModule):
+class ColaModel(pl.LightningModule):
     def __init__(self, model_name="google/bert_uncased_L-2_H-128_A-2", lr=1e-2):
         super().__init__()
         self.save_hyperparameters()
@@ -14,7 +14,7 @@ class ColaMoldel(pl.LightningModule):
         self.W = nn.Linear(self.bert.config.hidden_size, 2)
         self.num_classes = 2
 
-    def foward(self, input_ids, attention_mask):
+    def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
 
         h_cls = outputs.last_hidden_state[:, 0]
@@ -42,7 +42,7 @@ class ColaMoldel(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
     
-    
+
         
     
 
