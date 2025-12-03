@@ -21,8 +21,8 @@ def main():
 
     trainer = pl.Trainer(
         default_root_dir="logs",
-        # accelerator="gpu",
-        # devices=1,
+        accelerator="gpu",
+        devices=1,
         max_epochs=5,
         fast_dev_run=False,
         # logger=pl.loggers.TensorBoardLogger("logs/", name="cola", version=1),
