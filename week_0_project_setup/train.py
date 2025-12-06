@@ -9,7 +9,6 @@ from model import ColaModel
 
 def main():
     cola_data = DataModule()
-    print(cola_data)
     cola_model = ColaModel()
 
     checkpoint_callback = ModelCheckpoint(
@@ -25,7 +24,7 @@ def main():
         devices=1,
         max_epochs=5,
         fast_dev_run=False,
-        # logger=pl.loggers.TensorBoardLogger("logs/", name="cola", version=1),
+        logger=pl.loggers.TensorBoardLogger("logs/", name="cola", version=1),
         callbacks=[checkpoint_callback, early_stopping_callback],
     )
     trainer.fit(cola_model, cola_data)
