@@ -22,7 +22,7 @@ def main():
         default_root_dir="logs",
         accelerator="gpu",
         devices=1,
-        max_epochs=5,
+        max_epochs=2,
         fast_dev_run=False,
         logger=pl.loggers.TensorBoardLogger("logs/", name="cola", version=1),
         callbacks=[checkpoint_callback, early_stopping_callback],
