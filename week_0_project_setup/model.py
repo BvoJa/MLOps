@@ -25,6 +25,7 @@ class ColaModel(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         logits = self.forward(batch["input_ids"], batch["attention_mask"])
         loss = F.cross_entropy(logits, batch["label"])
+
         self.log("train_loss", loss, prog_bar=True)
 
         return loss
@@ -35,7 +36,8 @@ class ColaModel(pl.LightningModule):
         _, preds = torch.max(logits, dim=1)
 
         val_acc = accuracy_score(preds.cpu(), batch["label"].cpu())
-        val_acc = torch.tensor(val_acc)
+        val_acc = torch.tensor(val_acc, device=self.device)
+
         self.log("val_loss", loss, prog_bar=True, sync_dist=True)
         self.log("val_acc", val_acc, prog_bar=True, sync_dist=True)
 
