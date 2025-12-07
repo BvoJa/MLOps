@@ -22,7 +22,7 @@ def main():
         default_root_dir="logs",
         accelerator="gpu",
         devices=2,
-        strategy="ddp",
+        strategy="ddp_find_unused_parameters_true",
         max_epochs=5,
         fast_dev_run=False,
         logger=pl.loggers.TensorBoardLogger("logs/", name="cola", version=1),
