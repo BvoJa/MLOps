@@ -36,8 +36,8 @@ class ColaModel(pl.LightningModule):
 
         val_acc = accuracy_score(preds.cpu(), batch["label"].cpu())
         val_acc = torch.tensor(val_acc)
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", val_acc, prog_bar=True)
+        self.log("val_loss", loss, prog_bar=True, sync_dist=True)
+        self.log("val_acc", val_acc, prog_bar=True, sync_dist=True)
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
