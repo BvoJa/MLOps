@@ -4,7 +4,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from pytorch_lightning.loggers import WandbLogger
-wandb_logger = WandbLogger(project="MLOps_Basics")
 
 from data import DataModule
 from model import ColaModel
@@ -20,6 +19,7 @@ def main():
         monitor="val/loss", patience=3, verbose=True, mode="min"
     )
 
+    wandb_logger = WandbLogger(project="MLOps_Basics")
     trainer = pl.Trainer(
         default_root_dir="logs",
         accelerator="gpu",
