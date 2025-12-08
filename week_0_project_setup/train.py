@@ -23,9 +23,9 @@ def main():
     trainer = pl.Trainer(
         default_root_dir="logs",
         accelerator="gpu",
-        devices=1,
-        # strategy="ddp",
-        max_epochs=5,
+        devices=2,
+        strategy="ddp",
+        max_epochs=20,
         fast_dev_run=False,
         logger=wandb_logger,
         callbacks=[checkpoint_callback, early_stopping_callback],
