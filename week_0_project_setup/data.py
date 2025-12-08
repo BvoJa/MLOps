@@ -14,7 +14,6 @@ class DataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         load_dataset("glue", "cola")
-
     
     def tokenize_data(self, example):
         return self.tokenizer(
