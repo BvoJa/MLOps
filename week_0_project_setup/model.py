@@ -3,48 +3,59 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from transformers import AutoModel
-from sklearn.metrics import accuracy_score
+from transformers import AutoModelForSequenceClassification
+import torchmetrics
 
 class ColaModel(pl.LightningModule):
-    def __init__(self, model_name="google/bert_uncased_L-2_H-128_A-2", lr=1e-2):
+    def __init__(self, model_name="google/bert_uncased_L-2_H-128_A-2", lr=1e-4):
         super().__init__()
         self.save_hyperparameters()
 
-        self.bert = AutoModel.from_pretrained(model_name)
-        self.W = nn.Linear(self.bert.config.hidden_size, 2)
+        self.bert = AutoModelForSequenceClassification.from_pretrained(
+            model_name, num_labels=2
+        )
         self.num_classes = 2
 
-        for param in self.bert.parameters():
-            param.requires_grad = False
+        self.train_accuracy_metric = torchmetrics.Accuracy()
+        self.val_accuracy_metric = torchmetrics.Accuracy()
+        self.f1_metric = torchmetrics.F1Score(num_classes=self.num_classes)
+
+
+    def forward(self, input_ids, attention_mask, labels=None):
+        outputs = self.bert(
+            input_ids=input_ids, attention_mask=attention_mask, labels=labels
+        )
         
-        self.bert.eval()
-
-    def forward(self, input_ids, attention_mask):
-        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-
-        h_cls = outputs.last_hidden_state[:, 0]
-        logits = self.W(h_cls)
-
-        return logits
+        return outputs 
 
     def training_step(self, batch, batch_idx):
-        logits = self.forward(batch["input_ids"], batch["attention_mask"])
-        loss = F.cross_entropy(logits, batch["label"])
+        outputs = self.forward(
+            batch["input_ids"], batch["attention_mask"], labels=batch["label"]
+        )
+        preds = torch.argmax(outputs.logits, dim=1)
+        train_acc = self.train_accuracy_metric(preds, batch["labels"])
 
-        self.log("train_loss", loss, prog_bar=True)
+        self.log("train/loss", outputs.loss, prog_bar=True, on_epoch=True)
+        self.log("train/acc", train_acc, prog_bar=True, on_epoch=True)
 
-        return loss
+        return outputs.loss
 
     def validation_step(self, batch, batch_idx):
-        logits = self.forward(batch["input_ids"], batch["attention_mask"])
-        loss = F.cross_entropy(logits, batch["label"])
-        _, preds = torch.max(logits, dim=1)
+        outputs = self.forward(
+            batch["input_ids"], batch["attention_mask"], labels=batch["label"]
+        )
+        preds = torch.argmax(outputs.logits, 1)
 
-        val_acc = accuracy_score(preds.cpu(), batch["label"].cpu())
-        val_acc = torch.tensor(val_acc, device=self.device)
+        valid_acc = self.val_accuracy_metric(preds, batch["label"])
+        f1 = self.f1_metric(preds, batch["label"])
 
-        self.log("val_loss", loss, prog_bar=True, sync_dist=True)
-        self.log("val_acc", val_acc, prog_bar=True, sync_dist=True)
+        # Logging metrics
+        self.log("valid/loss", outputs.loss, prog_bar=True, on_step=True)
+        self.log("valid/acc", valid_acc, prog_bar=True, on_epoch=True)
+        self.log("valid/f1", f1, prog_bar=True, on_epoch=True)
+
+        return {"labels": batch["label"], "logits": outputs.logits}
+        
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
