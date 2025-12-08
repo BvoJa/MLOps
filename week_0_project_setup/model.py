@@ -16,9 +16,9 @@ class ColaModel(pl.LightningModule):
         )
         self.num_classes = 2
 
-        self.train_accuracy_metric = torchmetrics.Accuracy()
-        self.val_accuracy_metric = torchmetrics.Accuracy()
-        self.f1_metric = torchmetrics.F1Score(num_classes=self.num_classes)
+        self.train_accuracy_metric = torchmetrics.Accuracy(task="binary")
+        self.val_accuracy_metric = torchmetrics.Accuracy(task="binary")
+        self.f1_metric = torchmetrics.F1Score(task="binary", num_classes=self.num_classes)
 
 
     def forward(self, input_ids, attention_mask, labels=None):
@@ -46,17 +46,28 @@ class ColaModel(pl.LightningModule):
         )
         preds = torch.argmax(outputs.logits, 1)
 
-        valid_acc = self.val_accuracy_metric(preds, batch["label"])
+        val_acc = self.val_accuracy_metric(preds, batch["label"])
         f1 = self.f1_metric(preds, batch["label"])
 
-        # Logging metrics
-        self.log("valid/loss", outputs.loss, prog_bar=True, on_step=True)
-        self.log("valid/acc", valid_acc, prog_bar=True, on_epoch=True)
-        self.log("valid/f1", f1, prog_bar=True, on_epoch=True)
+        self.log("val/loss", outputs.loss, prog_bar=True, on_step=True)
+        self.log("val/acc", val_acc, prog_bar=True, on_epoch=True)
+        self.log("val/f1", f1, prog_bar=True, on_epoch=True)
 
         return {"labels": batch["label"], "logits": outputs.logits}
-        
+    
+    def validation_epoch_end(self, outputs):
+        labels = torch.cat([x["labels"] for x in outputs])
+        logits = torch.cat([x["logits"] for x in outputs])
+        preds = torch.argmax(logits, dim=1)
 
+        self.logger.experiment.log(
+            {
+                "conf": wandb.plot.confusion_matrix(
+                    probs=logits.numpy(), y_true=labels.numpy()
+                )
+            }
+        )
+        
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
     
