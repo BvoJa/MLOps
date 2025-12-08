@@ -33,7 +33,7 @@ class ColaModel(pl.LightningModule):
             batch["input_ids"], batch["attention_mask"], labels=batch["label"]
         )
         preds = torch.argmax(outputs.logits, dim=1)
-        train_acc = self.train_accuracy_metric(preds, batch["labels"])
+        train_acc = self.train_accuracy_metric(preds, batch["label"])
 
         self.log("train/loss", outputs.loss, prog_bar=True, on_epoch=True)
         self.log("train/acc", train_acc, prog_bar=True, on_epoch=True)
