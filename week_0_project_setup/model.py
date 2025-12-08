@@ -14,6 +14,11 @@ class ColaModel(pl.LightningModule):
         self.W = nn.Linear(self.bert.config.hidden_size, 2)
         self.num_classes = 2
 
+        for param in self.bert.parameters():
+            param.requires_grad = False
+        
+        self.bert.eval()
+
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
 
@@ -43,6 +48,7 @@ class ColaModel(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
+    
     
 
         
