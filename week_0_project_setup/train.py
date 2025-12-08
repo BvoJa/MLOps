@@ -9,7 +9,7 @@ import pandas as pd
 from data import DataModule
 from model import ColaModel
 
-class SamplesVisualisationLogger(pl.Callback):
+class SamplesVisualizationLogger(pl.Callback):
     def __init__(self, datamodule):
         super().__init__()
 
@@ -58,7 +58,7 @@ def main():
         max_epochs=20,
         fast_dev_run=False,
         logger=wandb_logger,
-        callbacks=[checkpoint_callback, early_stopping_callback],
+        callbacks=[checkpoint_callback, SamplesVisualizationLogger(cola_data) , early_stopping_callback],
     )
     trainer.fit(cola_model, cola_data)
 
