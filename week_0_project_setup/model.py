@@ -54,19 +54,6 @@ class ColaModel(pl.LightningModule):
         self.log("val/f1", f1, prog_bar=True, on_epoch=True)
 
         return {"labels": batch["label"], "logits": outputs.logits}
-    
-    def validation_epoch_end(self, outputs):
-        labels = torch.cat([x["labels"] for x in outputs])
-        logits = torch.cat([x["logits"] for x in outputs])
-        preds = torch.argmax(logits, dim=1)
-
-        self.logger.experiment.log(
-            {
-                "conf": wandb.plot.confusion_matrix(
-                    probs=logits.numpy(), y_true=labels.numpy()
-                )
-            }
-        )
         
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.hparams["lr"])
