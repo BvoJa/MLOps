@@ -14,10 +14,10 @@ def main():
     cola_model = ColaModel()
 
     checkpoint_callback = ModelCheckpoint(
-        dirpath="./models", monitor="val_loss", mode="min"
+        dirpath="./models", monitor="val/loss", mode="min"
     )
     early_stopping_callback = EarlyStopping(
-        monitor="val_loss", patience=3, verbose=True, mode="min"
+        monitor="val/loss", patience=3, verbose=True, mode="min"
     )
 
     trainer = pl.Trainer(
