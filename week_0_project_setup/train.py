@@ -22,14 +22,13 @@ def main():
         default_root_dir="logs",
         accelerator="gpu",
         devices=2,
-        strategy="ddp_find_unused_parameters_true",
+        strategy="ddp",
         max_epochs=5,
         fast_dev_run=False,
         logger=pl.loggers.TensorBoardLogger("logs/", name="cola", version=1),
         callbacks=[checkpoint_callback, early_stopping_callback],
     )
     trainer.fit(cola_model, cola_data)
-
 
 if __name__ == "__main__":
     main()
