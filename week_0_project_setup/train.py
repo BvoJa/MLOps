@@ -23,8 +23,8 @@ def main():
     trainer = pl.Trainer(
         default_root_dir="logs",
         accelerator="gpu",
-        devices=2,
-        strategy="ddp",
+        devices=1,
+        # strategy="ddp",
         max_epochs=5,
         fast_dev_run=False,
         logger=wandb_logger,
