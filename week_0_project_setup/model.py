@@ -20,6 +20,7 @@ class ColaModel(pl.LightningModule):
         self.val_accuracy_metric = torchmetrics.Accuracy(task="binary")
         self.f1_metric = torchmetrics.F1Score(task="binary", num_classes=self.num_classes)
 
+        self.bert.train()
 
     def forward(self, input_ids, attention_mask, labels=None):
         outputs = self.bert(
