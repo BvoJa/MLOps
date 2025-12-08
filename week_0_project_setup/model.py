@@ -51,8 +51,8 @@ class ColaModel(pl.LightningModule):
         f1 = self.f1_metric(preds, batch["label"])
 
         self.log("val/loss", outputs.loss, prog_bar=True, on_step=True)
-        self.log("val/acc", val_acc, prog_bar=True, on_epoch=True)
-        self.log("val/f1", f1, prog_bar=True, on_epoch=True)
+        self.log("val/acc", val_acc, prog_bar=True, on_epoch=True, sync_dist=True)
+        self.log("val/f1", f1, prog_bar=True, on_epoch=True, sync_dist=True)
 
         return {"labels": batch["label"], "logits": outputs.logits}
         
