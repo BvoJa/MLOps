@@ -6,11 +6,12 @@ from datasets import load_dataset
 from transformers import AutoTokenizer 
 
 class DataModule(pl.LightningDataModule):
-    def __init__(self, model_name="google/bert_uncased_L-2_H-128_A-2", batch_size=32):
+    def __init__(self, model_name="google/bert_uncased_L-2_H-128_A-2", batch_size=32, max_length=512):
         super().__init__()
 
-        self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.batch_size = batch_size
+        self.max_length = max_length
 
     def prepare_data(self):
         load_dataset("glue", "cola")
@@ -20,7 +21,7 @@ class DataModule(pl.LightningDataModule):
             example["sentence"],
             truncation=True,
             padding="max_length",
-            max_length=512
+            max_length=self.max_length
         )
     
     def setup(self, stage=None):
@@ -31,7 +32,6 @@ class DataModule(pl.LightningDataModule):
             self.val_data = cola_dataset["validation"]
 
             self.train_data = self.train_data.map(self.tokenize_data, batched=True)
-            # print(self.train_data[0].keys())
             self.train_data.set_format(
                 type="torch", columns=["input_ids", "attention_mask", "label"]
             )
