@@ -1,0 +1,11 @@
+model:
+  name: google/bert_uncased_L-2_H-128_A-2
+  tokenizer: google/bert_uncased_L-2_H-128_A-2
+processing:
+  batch_size: 64
+  max_length: 512
+training:
+  accelerator: gpu
+  devices: 2
+  strategy: ddp
+  max_epochs: 20

@@ -1,0 +1,14 @@
+[2025-12-10 23:20:54,549][__main__][INFO] - model:
+  name: google/bert_uncased_L-2_H-128_A-2
+  tokenizer: google/bert_uncased_L-2_H-128_A-2
+processing:
+  batch_size: 64
+  max_legnth: 512
+training:
+  accelerator: gpu
+  devices: 2
+  strategy: ddp
+  max_epochs: 20
+
+[2025-12-10 23:20:54,550][__main__][INFO] - Using the model: google/bert_uncased_L-2_H-128_A-2
+[2025-12-10 23:20:54,550][__main__][INFO] - Using the tokenizer: google/bert_uncased_L-2_H-128_A-2
