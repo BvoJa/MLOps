@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def main(cfg):
     logger.info(OmegaConf.to_yaml(cfg, resolve=True))
     logger.info(f"Using the model: {cfg.model.name}")
-    # logger.info(f"Using the tokenizer: {cfg.model.tokenizer}")
+    logger.info(f"Using the tokenizer: {cfg.model.tokenizer}")
 
     cola_data = DataModule(
         cfg.model.name, cfg.processing.batch_size, cfg.processing.max_length
