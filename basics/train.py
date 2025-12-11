@@ -28,7 +28,7 @@ def main(cfg):
 
     checkpoint_callback = ModelCheckpoint(
         dirpath="./models", 
-        monitor="val/loss", 
+        monitor="val/loss_epoch", 
         mode="min",
     )
 
