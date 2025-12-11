@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 @hydra.main(config_path="./configs", config_name="config", version_base=None)
 def main(cfg):
     logger.info(OmegaConf.to_yaml(cfg, resolve=True))
-    # logger.info(f"Using the model: {cfg.model.name}")
+    logger.info(f"Using the model: {cfg.model.name}")
     # logger.info(f"Using the tokenizer: {cfg.model.tokenizer}")
 
     cola_data = DataModule(
